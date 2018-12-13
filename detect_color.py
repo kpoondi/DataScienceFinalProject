@@ -1,50 +1,41 @@
-from PIL import Image
-import sys
+# import the necessary packages
+from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
+import argparse
+import utils
 import cv2
-import numpy as np
+ 
+# construct the argument parser and parse the arguments
+ap = argparse.ArgumentParser()
+ap.add_argument("-i", "--image", required = True, help = "Path to the image")
+ap.add_argument("-c", "--clusters", required = True, type = int,
+    help = "# of clusters")
+args = vars(ap.parse_args())
+ 
+# load the image and convert it from BGR to RGB so that
+# we can dispaly it with matplotlib
+image = cv2.imread(args["image"])
+image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+ 
+# show our image
+plt.figure()
+plt.axis("off")
+plt.imshow(image)
 
+# reshape the image to be a list of pixels
+image = image.reshape((image.shape[0] * image.shape[1], 3))
 
-def most_frequent_colour(image):
+# cluster the pixel intensities
+clt = KMeans(n_clusters = args["clusters"])
+clt.fit(image)
 
-    w, h = image.size
-    pixels = image.getcolors(w * h)
-
-    most_frequent_pixel = pixels[0]
-
-    for count, colour in pixels:
-        if count > most_frequent_pixel[0]:
-            most_frequent_pixel = (count, colour)
-
-    return most_frequent_pixel[1]
-
-
-def save(result):
-    sample = Image.new("RGB", (200, 200,), result)
-    sample.save("result2.jpg")
-
-
-def main():
-    img = Image.open('./Sports/shoe1.jpg')
-    img = img.convert("RGBA")
-    datas = img.getdata()
-
-    newData = []
-    for item in datas:
-        if item[0] == 255 and item[1] == 255 and item[2] == 255:
-            newData.append((255, 255, 255, 0))
-        else:
-            newData.append(item)
-
-    img.putdata(newData)
-    img.save("img2.jpg", "PNG")
-
-    img2 = Image.open("img2.jpg")
-
-    result = most_frequent_colour(img2)
-    print(result)
-
-    save(result) 
-
-
-if __name__ == "__main__":
-    main()
+# build a histogram of clusters and then create a figure
+# representing the number of pixels labeled to each color
+hist = utils.centroid_histogram(clt)
+bar = utils.plot_colors(hist, clt.cluster_centers_)
+ 
+# show our color bart
+plt.figure()
+plt.axis("off")
+plt.imshow(bar)
+plt.show()
