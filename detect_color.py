@@ -10,18 +10,21 @@ ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--image", required = True, help = "Path to the image")
 ap.add_argument("-c", "--clusters", required = True, type = int,
     help = "# of clusters")
-args = vars(ap.parse_args())
+#args = vars(ap.parse_args())
  
 # load the image and convert it from BGR to RGB so that
 # we can dispaly it with matplotlib
-image = cv2.imread(args["image"])
+#image = cv2.imread(args["image"])
+img_path = "C:\\Users\jason\\UT\Junior_1st_Semester\EE_460J\\finalProject\DataScienceFinalProject\Formals\\100627.72.jpg"
+
+image = cv2.imread(str(img_path))
 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
- 
+
 # show our image
 plt.figure()
 plt.axis("off")
 plt.imshow(image)
-
+'''
 # reshape the image to be a list of pixels
 image = image.reshape((image.shape[0] * image.shape[1], 3))
 
@@ -39,3 +42,4 @@ plt.figure()
 plt.axis("off")
 plt.imshow(bar)
 plt.show()
+'''
